@@ -1,132 +1,429 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Katalog 1000++ Ebook OKOSPACE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        glass: {
+                            light: 'rgba(255, 255, 255, 0.7)',
+                            dark: 'rgba(30, 41, 59, 0.7)',
+                            borderLight: 'rgba(255, 255, 255, 0.5)',
+                            borderDark: 'rgba(255, 255, 255, 0.1)',
+                        }
+                    },
+                    animation: {
+                        'pop-in': 'popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'spin-slow': 'spin 3s linear infinite',
+                    },
+                    keyframes: {
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.8)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            transition: background-color 0.5s ease, color 0.5s ease;
+            overflow: hidden; /* Prevent scrolling during loading */
+        }
+
+        body.loaded {
+            overflow: auto; /* Enable scrolling after load */
+        }
+
+        /* --- LOADING SCREEN STYLES --- */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(248, 250, 252, 0.8); /* Light mode bg */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .dark #loading-screen {
+            background: rgba(15, 23, 42, 0.8); /* Dark mode bg */
+        }
+
+        #loading-screen.hidden-loader {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: #3b82f6; /* Blue 500 */
+            border-right-color: #a855f7; /* Purple 500 */
+            animation: spin 1s linear infinite;
+        }
+
+        /* --- LIQUID BACKGROUND ANIMATION --- */
+        .blob-cont {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -10;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: float 10s infinite ease-in-out alternate;
+        }
+
+        .blob-1 {
+            background: #60a5fa; /* Blue */
+            width: 500px;
+            height: 500px;
+            top: -100px;
+            left: -100px;
+            animation-duration: 15s;
+        }
+
+        .blob-2 {
+            background: #a78bfa; /* Purple */
+            width: 400px;
+            height: 400px;
+            bottom: -50px;
+            right: -50px;
+            animation-duration: 12s;
+            animation-delay: -2s;
+        }
+
+        .blob-3 {
+            background: #f472b6; /* Pink */
+            width: 300px;
+            height: 300px;
+            bottom: 20%;
+            left: 20%;
+            animation-duration: 18s;
+            animation-delay: -5s;
+        }
+
+        /* Dark Mode Blobs Adjustment */
+        .dark .blob { opacity: 0.3; }
+        .dark .blob-1 { background: #1e40af; }
+        .dark .blob-2 { background: #5b21b6; }
+        .dark .blob-3 { background: #9d174d; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        /* --- GLASSMORPHISM --- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            color: #e2e8f0;
+        }
+        
+        /* Context Menu Specific */
+        .context-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 8px;
+            color: #475569;
+        }
+        .dark .context-menu-item {
+            color: #e2e8f0;
+        }
+        .context-menu-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563eb;
+        }
+        .dark .context-menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #60a5fa;
+        }
+        .context-menu-separator {
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+            margin: 6px 0;
+        }
+        .dark .context-menu-separator {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* --- CARD HOVER EFFECT --- */
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card-hover:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        .dark .card-hover:hover {
+             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+             border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        /* --- ANIMASI LIST ITEM --- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.5s ease-out forwards;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        
         .gradient-text {
-            background: linear-gradient(to right, #2563eb, #7c3aed);
+            background: linear-gradient(135deg, #2563eb, #9333ea);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark .gradient-text {
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+<body class="bg-slate-50 dark:bg-slate-900 transition-colors duration-500 min-h-screen flex flex-col relative" oncontextmenu="return false;">
+
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen">
+        <div class="relative mb-6">
+            <!-- Animated Ring -->
+            <div class="loader-ring"></div>
+            <!-- Center Icon -->
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i class="fa-solid fa-book text-2xl text-slate-700 dark:text-white opacity-80"></i>
+            </div>
+        </div>
+        <div class="text-center">
+            <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-1">OKO<span class="text-blue-500">SPACE</span></h2>
+            <p id="loading-text" class="text-xs text-slate-500 dark:text-slate-400 tracking-widest font-semibold">MEMUAT PERPUSTAKAAN...</p>
+        </div>
+    </div>
+
+    <!-- Background Blobs -->
+    <div class="blob-cont">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- CUSTOM CONTEXT MENU -->
+    <div id="customContextMenu" class="hidden fixed z-[100] w-64 glass-panel rounded-xl p-2 shadow-2xl backdrop-blur-xl animate-pop-in border border-white/50 dark:border-slate-600/50">
+        <div class="px-4 py-3 border-b border-gray-200/50 dark:border-gray-700/50 mb-1">
+            <div class="font-bold text-sm dark:text-white">OKO<span class="text-blue-600 dark:text-blue-400">SPACE</span></div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400">Premium Ebook Library</div>
+        </div>
+        
+        <div class="context-menu-item" onclick="goToPurchase()">
+            <i class="fa-solid fa-cart-shopping w-5 text-center"></i>
+            <span>Beli Akses Sekarang</span>
+        </div>
+        
+        <div class="context-menu-item" onclick="window.open('https://wa.me/6285179642837', '_blank')">
+            <i class="fa-brands fa-whatsapp w-5 text-center"></i>
+            <span>Hubungi Admin</span>
+        </div>
+
+        <div class="context-menu-separator"></div>
+
+        <div class="context-menu-item" onclick="toggleDarkMode()">
+            <i class="fa-solid fa-circle-half-stroke w-5 text-center"></i>
+            <span>Ganti Tema</span>
+        </div>
+
+        <div class="context-menu-item" onclick="sharePage()">
+            <i class="fa-solid fa-share-nodes w-5 text-center"></i>
+            <span>Bagikan Halaman</span>
+        </div>
+        
+        <div class="context-menu-item" onclick="location.reload()">
+            <i class="fa-solid fa-rotate-right w-5 text-center"></i>
+            <span>Muat Ulang</span>
+        </div>
+    </div>
 
     <!-- Navbar & CTA Sticky -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <nav class="glass-panel sticky top-4 z-50 mx-4 mt-2 rounded-2xl transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                    <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
                         <i class="fa-solid fa-book"></i>
                     </div>
-                    <span class="font-bold text-xl tracking-tight">OKO<span class="text-blue-600">SPACE</span></span>
+                    <span class="font-bold text-xl tracking-tight dark:text-white">OKO<span class="text-blue-600 dark:text-blue-400">SPACE</span></span>
                 </div>
-                <!-- Desktop CTA -->
-                <div class="hidden md:flex items-center gap-4">
-                    <div class="text-right">
-                        <p class="text-xs text-slate-500">Harga Promo</p>
-                        <p class="font-bold text-blue-600">Rp 10.000</p>
+                
+                <div class="flex items-center gap-4">
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-white/10 transition">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:block text-yellow-400"></i>
+                    </button>
+
+                    <!-- Desktop CTA -->
+                    <div class="hidden md:flex items-center gap-4">
+                        <div class="text-right">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400">Harga Promo</p>
+                            <p class="font-bold text-blue-600 dark:text-blue-400">Rp 10.000</p>
+                        </div>
+                        <a href="#" onclick="goToPurchase()" class="bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:scale-105 transition shadow-lg shadow-blue-500/20">
+                            Beli Semua
+                        </a>
                     </div>
-                    <a href="#" onclick="goToPurchase()" class="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 animate-pulse">
-                        Beli Semua Sekarang
+                    
+                    <!-- Mobile CTA Icon -->
+                    <a href="#" onclick="goToPurchase()" class="md:hidden bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30">
+                        <i class="fa-solid fa-cart-shopping"></i>
                     </a>
                 </div>
-                <!-- Mobile CTA Icon -->
-                 <a href="#" onclick="goToPurchase()" class="md:hidden bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                </a>
             </div>
         </div>
     </nav>
 
     <!-- Header Area -->
-    <div class="bg-white pb-8 pt-10">
+    <div class="pb-8 pt-10">
         <div class="max-w-4xl mx-auto px-4 text-center">
-            <span class="inline-block py-1 px-3 rounded-full bg-blue-50 text-blue-600 text-xs font-bold mb-4 border border-blue-100">
+            <span class="inline-block py-1.5 px-4 rounded-full bg-blue-100/50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs font-bold mb-6 border border-blue-200/50 dark:border-blue-700/30 backdrop-blur-sm">
                 PREMIUM LIBRARY
             </span>
-            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4 leading-tight">
-                Daftar Lengkap <span class="gradient-text">1000++ Ebook</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight drop-shadow-sm">
+                Koleksi <span class="gradient-text">1000++ Ebook</span>
             </h1>
-            <p class="text-slate-500 mb-8 max-w-2xl mx-auto">
-                Miliki akses seumur hidup ke seluruh perpustakaan digital ini. Bisnis, Pengembangan Diri, Novel, Agama, dan Skill Teknis dalam satu paket hemat.
+            <p class="text-slate-600 dark:text-slate-300 mb-10 max-w-2xl mx-auto text-lg leading-relaxed">
+                Akses seumur hidup ke perpustakaan digital eksklusif. Bisnis, Pengembangan Diri, Novel, Agama, dan Skill Teknis.
             </p>
 
-            <!-- Search Bar -->
-            <div class="relative max-w-xl mx-auto">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i class="fa-solid fa-search text-slate-400"></i>
-                </div>
-                <input type="text" id="searchInput" 
-                    class="block w-full pl-11 pr-4 py-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:bg-white focus:border-transparent transition text-sm md:text-base shadow-sm" 
-                    placeholder="Cari judul ebook (contoh: Tere Liye, Bisnis, Marketing)...">
-                <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
-                    <span id="totalItemsBadge" class="bg-slate-200 text-slate-600 text-xs font-bold px-2 py-1 rounded-md">Loading...</span>
+            <!-- Search Bar (Glass Style) -->
+            <div class="relative max-w-xl mx-auto group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-search text-slate-400 dark:text-slate-500"></i>
+                    </div>
+                    <input type="text" id="searchInput" 
+                        class="block w-full pl-11 pr-4 py-4 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-white/50 dark:border-slate-600/50 backdrop-blur-xl focus:ring-2 focus:ring-blue-500 focus:bg-white/90 dark:focus:bg-slate-800/90 transition text-slate-800 dark:text-white shadow-lg" 
+                        placeholder="Cari judul ebook (contoh: Tere Liye, Bisnis)...">
+                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                        <span id="totalItemsBadge" class="bg-slate-200/50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 text-xs font-bold px-2 py-1 rounded-md backdrop-blur-sm">Loading...</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- List Content -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 w-full z-10">
         
         <!-- Filter Info -->
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="font-bold text-slate-700 text-lg">Katalog File</h2>
-            <div class="text-sm text-slate-500">
-                Menampilkan <span id="showingCount" class="font-bold text-slate-900">0</span> dari <span id="totalCount">0</span>
+        <div class="flex justify-between items-center mb-6 px-2">
+            <h2 class="font-bold text-slate-700 dark:text-slate-200 text-xl">Katalog File</h2>
+            <div class="text-sm text-slate-500 dark:text-slate-400 bg-white/30 dark:bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm">
+                Menampilkan <span id="showingCount" class="font-bold text-slate-900 dark:text-white">0</span> dari <span id="totalCount">0</span>
             </div>
         </div>
 
         <!-- Grid Container -->
-        <div id="ebookGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div id="ebookGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             <!-- Items injected by JS -->
         </div>
 
         <!-- Pagination -->
-        <div class="mt-10 flex justify-center gap-2" id="pagination">
+        <div class="mt-12 flex justify-center gap-3" id="pagination">
             <!-- Pagination injected by JS -->
         </div>
 
     </main>
 
     <!-- Footer sticky bottom for mobile purchase -->
-    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40">
-        <div class="flex items-center justify-between gap-4">
-            <div>
-                <p class="text-xs text-slate-500">Total 1000+ File</p>
-                <p class="font-bold text-blue-600 text-lg">Rp 10.000</p>
-            </div>
-            <a href="#" onclick="goToPurchase()" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold text-center hover:bg-blue-700 transition">
-                Beli Akses Sekarang
-            </a>
+    <div class="md:hidden fixed bottom-4 left-4 right-4 glass-panel p-4 rounded-2xl z-40 flex items-center justify-between gap-4 shadow-2xl">
+        <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Total 1000+ File</p>
+            <p class="font-bold text-blue-600 dark:text-blue-400 text-lg">Rp 10.000</p>
         </div>
+        <a href="#" onclick="goToPurchase()" class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-bold text-center shadow-lg shadow-blue-500/30">
+            Beli Akses
+        </a>
     </div>
 
     <!-- Simple Footer -->
-    <footer class="bg-slate-900 text-slate-400 py-12 mt-auto mb-20 md:mb-0">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="mb-4 text-sm">© 2024 OKOSPACE Library. All rights reserved.</p>
-            <p class="text-xs text-slate-600">Seluruh materi dalam daftar ini tersedia untuk diunduh setelah pembelian paket.</p>
+    <footer class="mt-auto py-12 mb-24 md:mb-0 text-center relative z-10">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="mb-2 text-sm text-slate-500 dark:text-slate-400 font-medium">© 2026 OKOSPACE</p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Design by Alfonsus Richard</p>
         </div>
     </footer>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
         // ==========================================
-        // KONFIGURASI LINK PEMBAYARAN (EDIT DISINI)
+        // LOADING SCREEN LOGIC
+        // ==========================================
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loading-screen');
+            const body = document.body;
+            
+            // Sedikit delay buatan agar animasi loading terlihat (aesthetic purpose)
+            // Jika koneksi sangat cepat, user tetap melihat branding sejenak
+            setTimeout(() => {
+                loader.classList.add('hidden-loader');
+                body.classList.add('loaded');
+            }, 800);
+        });
+
+        // ==========================================
+        // KONFIGURASI LINK PEMBAYARAN
         // ==========================================
         const BUY_LINK = "http://lynk.id/okospace/0okzpx1dpe6v/checkout"; 
         
@@ -135,7 +432,86 @@
         }
 
         // ==========================================
-        // DATA RAW (DARI LIST YANG ANDA BERIKAN)
+        // CUSTOM CONTEXT MENU LOGIC
+        // ==========================================
+        const contextMenu = document.getElementById('customContextMenu');
+        
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+
+            // Kalkulasi posisi agar tidak keluar layar
+            const menuWidth = contextMenu.offsetWidth;
+            const menuHeight = contextMenu.offsetHeight;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            let x = e.clientX;
+            let y = e.clientY;
+
+            // Jika terlalu ke kanan
+            if (x + menuWidth > windowWidth) {
+                x = windowWidth - menuWidth - 10;
+            }
+            
+            // Jika terlalu ke bawah
+            if (y + menuHeight > windowHeight) {
+                y = windowHeight - menuHeight - 10;
+            }
+
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+            contextMenu.classList.remove('hidden');
+            
+            // Trigger animation repaint
+            contextMenu.classList.remove('animate-pop-in');
+            void contextMenu.offsetWidth; 
+            contextMenu.classList.add('animate-pop-in');
+        });
+
+        document.addEventListener('click', () => {
+            contextMenu.classList.add('hidden');
+        });
+
+        // Share Function
+        function sharePage() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'OKOSPACE Library',
+                    text: 'Dapatkan 1000++ Ebook Premium di OKOSPACE',
+                    url: window.location.href,
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link telah disalin ke clipboard!');
+            }
+        }
+
+
+        // ==========================================
+        // DARK MODE LOGIC
+        // ==========================================
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Check Local Storage Preference on Load
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // ==========================================
+        // DATA RAW
         // ==========================================
         const rawEbookList = `1 - ID430 - Metode Jitu Meningkatkan Daya Ingat.pdf
 2 (102) Hello Cello.pdf
@@ -1305,29 +1681,40 @@ Widiastuti - eBook Psikologi Umum 1 (1).pdf
             renderPage(1);
         }
 
-        function createCard(ebook) {
-            let colorClass = 'bg-blue-100 text-blue-800 border-blue-200';
+        function createCard(ebook, index) {
+            let colorClass = 'bg-blue-100/50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-700/30';
             let iconClass = 'fa-file-pdf';
+            let iconColor = 'text-blue-400 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300';
+            let iconBg = 'bg-blue-50 dark:bg-slate-700 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50';
             
             if(ebook.type === 'EPUB') {
-                colorClass = 'bg-green-100 text-green-800 border-green-200';
+                colorClass = 'bg-green-100/50 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-700/30';
                 iconClass = 'fa-book-open';
+                iconColor = 'text-green-400 dark:text-green-400 group-hover:text-green-600 dark:group-hover:text-green-300';
+                iconBg = 'bg-green-50 dark:bg-slate-700 group-hover:bg-green-100 dark:group-hover:bg-green-900/50';
             }
 
+            // Animasi delay untuk efek staggered
+            const delay = (index % ITEMS_PER_PAGE) * 0.05;
+
             return `
-            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col h-full group">
-                <div class="flex items-start justify-between mb-3">
-                    <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-500 transition">
+            <div class="animate-fade-up glass-panel rounded-2xl p-5 card-hover flex flex-col h-full group relative overflow-hidden" style="animation-delay: ${delay}s">
+                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500"></div>
+                
+                <div class="flex items-start justify-between mb-3 relative z-10">
+                    <div class="w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center ${iconColor} transition-colors shadow-sm">
                         <i class="fa-solid ${iconClass}"></i>
                     </div>
-                    <span class="text-[10px] font-bold px-2 py-1 rounded border ${colorClass}">${ebook.type}</span>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-lg border backdrop-blur-md ${colorClass}">${ebook.type}</span>
                 </div>
-                <h3 class="font-bold text-slate-800 text-sm leading-snug mb-2 line-clamp-3" title="${ebook.title}">
+                
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm leading-snug mb-3 line-clamp-2 relative z-10" title="${ebook.title}">
                     ${ebook.title}
                 </h3>
-                <div class="mt-auto pt-4">
-                    <button onclick="goToPurchase()" class="w-full bg-slate-50 text-slate-600 border border-slate-200 py-2 rounded-lg text-sm font-semibold hover:bg-blue-600 hover:text-white hover:border-blue-600 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-lock"></i> Beli Akses
+                
+                <div class="mt-auto pt-2 relative z-10">
+                    <button onclick="goToPurchase()" class="w-full bg-white/50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-white/60 dark:border-slate-600 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-600 hover:text-white hover:border-blue-600 dark:hover:bg-blue-500 dark:hover:text-white dark:hover:border-blue-500 transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
+                        <i class="fa-solid fa-lock text-xs"></i> Beli Akses
                     </button>
                 </div>
             </div>
@@ -1344,14 +1731,14 @@ Widiastuti - eBook Psikologi Umum 1 (1).pdf
             
             if(pageData.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full text-center py-20">
-                        <i class="fa-solid fa-search text-4xl text-slate-300 mb-4"></i>
-                        <p class="text-slate-500">Tidak ditemukan ebook dengan kata kunci tersebut.</p>
+                    <div class="col-span-full text-center py-20 glass-panel rounded-3xl mx-4">
+                        <i class="fa-solid fa-search text-5xl text-slate-300 dark:text-slate-600 mb-4"></i>
+                        <p class="text-slate-500 dark:text-slate-400 text-lg">Tidak ditemukan ebook dengan kata kunci tersebut.</p>
                     </div>
                 `;
             } else {
-                pageData.forEach(item => {
-                    grid.innerHTML += createCard(item);
+                pageData.forEach((item, index) => {
+                    grid.innerHTML += createCard(item, index);
                 });
             }
 
@@ -1366,14 +1753,16 @@ Widiastuti - eBook Psikologi Umum 1 (1).pdf
             
             let html = '';
             
+            const btnClass = "w-11 h-11 rounded-xl glass-panel border border-white/40 dark:border-slate-600 flex items-center justify-center hover:bg-white/80 dark:hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-transparent transition text-slate-700 dark:text-slate-200";
+            
             // Prev
-            html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="w-10 h-10 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 disabled:opacity-50"><i class="fa-solid fa-chevron-left"></i></button>`;
+            html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="${btnClass}"><i class="fa-solid fa-chevron-left"></i></button>`;
             
             // Page Info
-            html += `<span class="px-4 flex items-center font-medium text-slate-600">Halaman ${currentPage} / ${totalPages}</span>`;
+            html += `<span class="glass-panel px-6 rounded-xl flex items-center font-bold text-slate-600 dark:text-slate-300 border border-white/40 dark:border-slate-600">Halaman ${currentPage} / ${totalPages}</span>`;
 
             // Next
-            html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="w-10 h-10 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 disabled:opacity-50"><i class="fa-solid fa-chevron-right"></i></button>`;
+            html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="${btnClass}"><i class="fa-solid fa-chevron-right"></i></button>`;
             
             container.innerHTML = html;
         }
